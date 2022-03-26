@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { AiFillPlayCircle } from 'react-icons/ai';
 import { SiEthereum } from 'react-icons/si';
 import { BsInfoCircle } from 'react-icons/bs';
@@ -23,8 +23,13 @@ const Welcome = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { connectWallet, currentAccount, handleChange, formData, sendTransaction } = useContext(TransactionContext);
 
+  // I added this, because I constantly get an error after updating my code
+  // it says I cannot use connectWallet, because it's empty
+  useEffect(() => { }, [TransactionContext])
 
-  const handleSubmit = () => {
+
+
+  const handleSubmit = (e) => {
     const { addressTo, amount, keyword, message } = formData;
 
     e.preventDefault();

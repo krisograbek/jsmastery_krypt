@@ -13,7 +13,7 @@ const getEthereumContract = () => {
   const signer = provider.getSigner();
   const transactionContract = new ethers.Contract(contractAddress, contractABI, signer);
 
-  console.log({ provider, signer, transactionContract });
+  return transactionContract;
 }
 
 export const TransactionProvider = ({ children }) => {
@@ -71,6 +71,8 @@ export const TransactionProvider = ({ children }) => {
 
       // get the data from the Form (Inputs in Welcome)
       const { addressTo, amount, keyword, message } = formData;
+
+      const transactionContract = getEthereumContract();
 
     } catch (error) {
       console.log(error)
