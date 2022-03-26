@@ -71,8 +71,24 @@ export const TransactionProvider = ({ children }) => {
 
       // get the data from the Form (Inputs in Welcome)
       const { addressTo, amount, keyword, message } = formData;
+      // We need to parse the amount to hex
+      // Using parseEther We parse the amount of Ether to hex in GWEI
+      const parsedAmount = ethers.utils.parseEther(amount);
 
       const transactionContract = getEthereumContract();
+
+
+      await ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: currentAccount,
+          to: addressTo,
+          gas: '0x5208', //21000 GWEI
+          value: parsedAmount._hex
+        }]
+      });
+
+      const transactionHash = await transactionContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
 
     } catch (error) {
       console.log(error)
