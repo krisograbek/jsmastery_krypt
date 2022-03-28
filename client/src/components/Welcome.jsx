@@ -21,8 +21,7 @@ const Input = ({ placeholder, name, type, value, handleChange }) => (
 )
 
 const Welcome = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { connectWallet, currentAccount, handleChange, formData, sendTransaction } = useContext(TransactionContext);
+  const { connectWallet, currentAccount, handleChange, formData, sendTransaction, isLoading } = useContext(TransactionContext);
 
   // I added this, because I constantly get an error after updating my code
   // it says I cannot use connectWallet, because it's empty
