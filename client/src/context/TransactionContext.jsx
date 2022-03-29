@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
+import { constants, ethers } from 'ethers';
+import { useEthers } from '@usedapp/core';
 
-import { contractABI, contractAddress } from '../utils/constants';
+import { contractABI } from '../utils/constants';
+import networkMapping from "../utils/map.json"
 
 export const TransactionContext = React.createContext();
 
 // we have access to ethereum, because Metamask is installed in our browser
 const { ethereum } = window;
 
-const getEthereumContract = () => {
+const getEthereumContract = (chainId) => {
   const provider = new ethers.providers.Web3Provider(ethereum);
   const signer = provider.getSigner();
+  const contractAddress = chainId ? networkMapping[String(chainId)]["Transactions"][0] : constants.AddressZero;
+  console.log("Contract: ", contractAddress)
   const transactionContract = new ethers.Contract(contractAddress, contractABI, signer);
 
   return transactionContract;
@@ -22,6 +26,10 @@ export const TransactionProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
   const [transactions, setTransactions] = useState([]);
+  const { chainId, account } = useEthers();
+
+  console.log("chain id context: ", chainId)
+  console.log("account context: ", account)
 
   const handleChange = (e, name) => {
     // setFormData passes previous State as the first parameter
@@ -37,7 +45,7 @@ export const TransactionProvider = ({ children }) => {
     try {
       if (!ethereum) return alert("Please install metamask");
 
-      const transactionContract = getEthereumContract();
+      const transactionContract = getEthereumContract(chainId);
       const availableTransactions = await transactionContract.getAllTransactions();
 
       console.log(availableTransactions)
@@ -59,18 +67,18 @@ export const TransactionProvider = ({ children }) => {
     }
   }
 
-  const connectWallet = async () => {
-    try {
-      if (!ethereum) return alert("Please install metamask");
-      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+  // const connectWallet = async () => {
+  //   try {
+  //     if (!ethereum) return alert("Please install metamask");
+  //     const accounts = await ethereum.request({ method: "eth_requestAccounts" });
 
-      setCurrentAccount(accounts[0]);
-    } catch (error) {
-      console.log(error)
+  //     setCurrentAccount(accounts[0]);
+  //   } catch (error) {
+  //     console.log(error)
 
-      throw new Error("No Ethereum Object")
-    }
-  }
+  //     throw new Error("No Ethereum Object")
+  //   }
+  // }
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -97,7 +105,7 @@ export const TransactionProvider = ({ children }) => {
 
   const checkIfTransactionsExist = async () => {
     try {
-      const transactionContract = getEthereumContract();
+      const transactionContract = getEthereumContract(chainId);
       const transactionCount = await transactionContract.getTransactionCount();
 
       window.localStorage.setItem("transactionCount", transactionCount)
@@ -112,26 +120,26 @@ export const TransactionProvider = ({ children }) => {
 
   const sendTransaction = async () => {
     try {
-      if (!ethereum) return alert("Please install metamask");
+      // if (!ethereum) return alert("Please install metamask");
 
       // get the data from the Form (Inputs in Welcome)
       const { addressTo, amount, keyword, message } = formData;
       // We need to parse the amount to hex
-      // Using parseEther We parse the amount of Ether to hex in GWEI
+      // Using parseEther We parse the amount of Ether in GWEI
       const parsedAmount = ethers.utils.parseEther(amount);
 
-      const transactionContract = getEthereumContract();
+      const transactionContract = getEthereumContract(chainId);
 
 
-      await ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: currentAccount,
-          to: addressTo,
-          gas: '0x5208', //21000 GWEI
-          value: parsedAmount._hex
-        }]
-      });
+      // await ethereum.request({
+      //   method: 'eth_sendTransaction',
+      //   params: [{
+      //     from: currentAccount,
+      //     to: addressTo,
+      //     gas: '0x5208',            // 21000 GWEI 
+      //     value: parsedAmount._hex  // To hex
+      //   }]
+      // });
 
       const transactionHash = await transactionContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
 
@@ -161,7 +169,7 @@ export const TransactionProvider = ({ children }) => {
 
 
   return (
-    <TransactionContext.Provider value={{ connectWallet, currentAccount, handleChange, formData, sendTransaction, transactions, isLoading }}>
+    <TransactionContext.Provider value={{ currentAccount, handleChange, formData, sendTransaction, transactions, isLoading }}>
       {children}
     </TransactionContext.Provider>
   )

@@ -1,16 +1,23 @@
-import { Navbar, Footer, Loader, Services, Welcome, Transactions } from "./components"
+import { Navbar, Footer, Services, Welcome, Transactions } from "./components"
+import { DAppProvider, Rinkeby, Ropsten } from '@usedapp/core';
+
+const config = {
+  networks: [Rinkeby, Ropsten]
+}
 
 const App = () => {
   return (
-    <div className="min-h-screen">
-      <div className="gradient-bg-welcome">
-        <Navbar />
-        <Welcome />
+    <DAppProvider config={config}>
+      <div className="min-h-screen">
+        <div className="gradient-bg-welcome">
+          <Navbar />
+          <Welcome />
+        </div>
+        <Services />
+        <Transactions />
+        <Footer />
       </div>
-      <Services />
-      <Transactions />
-      <Footer />
-    </div>
+    </DAppProvider>
   );
 }
 
