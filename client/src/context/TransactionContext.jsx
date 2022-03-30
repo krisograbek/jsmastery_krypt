@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
-
-import { contractABI, contractAddress } from '../utils/constants';
+import { constants, ethers } from 'ethers';
+import { useEthers } from '@usedapp/core';
+import { Contract } from '@ethersproject/contracts'
+import { contractABI } from '../utils/constants';
+import networkMapping from "../utils/map.json"
 
 export const TransactionContext = React.createContext();
 
 // we have access to ethereum, because Metamask is installed in our browser
 const { ethereum } = window;
 
-const getEthereumContract = () => {
+const getEthereumContract = (chainId) => {
   const provider = new ethers.providers.Web3Provider(ethereum);
   const signer = provider.getSigner();
-  const transactionContract = new ethers.Contract(contractAddress, contractABI, signer);
+  const contractAddress = chainId ? networkMapping[String(chainId)]["Transactions"][0] : constants.AddressZero;
+  console.log("Contract: ", contractAddress)
+  const contractInterface = new ethers.utils.Interface(contractABI);
+  const transactionContract = new Contract(contractAddress, contractInterface, signer);
 
   return transactionContract;
 }
@@ -22,6 +27,10 @@ export const TransactionProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
   const [transactions, setTransactions] = useState([]);
+  const { chainId, account } = useEthers();
+
+  console.log("chain id context: ", chainId)
+  console.log("account context : ", account)
 
   const handleChange = (e, name) => {
     // setFormData passes previous State as the first parameter
@@ -37,7 +46,7 @@ export const TransactionProvider = ({ children }) => {
     try {
       if (!ethereum) return alert("Please install metamask");
 
-      const transactionContract = getEthereumContract();
+      const transactionContract = getEthereumContract(chainId);
       const availableTransactions = await transactionContract.getAllTransactions();
 
       console.log(availableTransactions)
@@ -75,13 +84,12 @@ export const TransactionProvider = ({ children }) => {
   const checkIfWalletIsConnected = async () => {
     try {
 
-      if (!ethereum) return alert("Please install metamask");
+      // if (!account) return alert("Please connect Wallet");
 
-      const accounts = await ethereum.request({ method: "eth_accounts" });
-      console.log(accounts)
+      console.log(account)
 
-      if (accounts.length) {
-        setCurrentAccount(accounts[0]);
+      if (account) {
+        setCurrentAccount(account);
 
         // get all transactions
         getAllTransactions();
@@ -97,7 +105,8 @@ export const TransactionProvider = ({ children }) => {
 
   const checkIfTransactionsExist = async () => {
     try {
-      const transactionContract = getEthereumContract();
+      const transactionContract = getEthereumContract(chainId);
+      console.log(transactionContract)
       const transactionCount = await transactionContract.getTransactionCount();
 
       window.localStorage.setItem("transactionCount", transactionCount)
@@ -112,24 +121,24 @@ export const TransactionProvider = ({ children }) => {
 
   const sendTransaction = async () => {
     try {
-      if (!ethereum) return alert("Please install metamask");
+      // if (!ethereum) return alert("Please install metamask");
 
       // get the data from the Form (Inputs in Welcome)
       const { addressTo, amount, keyword, message } = formData;
       // We need to parse the amount to hex
-      // Using parseEther We parse the amount of Ether to hex in GWEI
+      // Using parseEther We parse the amount of Ether in GWEI
       const parsedAmount = ethers.utils.parseEther(amount);
 
-      const transactionContract = getEthereumContract();
+      const transactionContract = getEthereumContract(chainId);
 
 
       await ethereum.request({
         method: 'eth_sendTransaction',
         params: [{
-          from: currentAccount,
+          from: account,
           to: addressTo,
-          gas: '0x5208', //21000 GWEI
-          value: parsedAmount._hex
+          gas: '0x5208',            // 21000 GWEI 
+          value: parsedAmount._hex  // To hex
         }]
       });
 
@@ -157,11 +166,11 @@ export const TransactionProvider = ({ children }) => {
   useEffect(() => {
     checkIfWalletIsConnected();
     checkIfTransactionsExist();
-  }, [])
+  }, [account])
 
 
   return (
-    <TransactionContext.Provider value={{ connectWallet, currentAccount, handleChange, formData, sendTransaction, transactions, isLoading }}>
+    <TransactionContext.Provider value={{ handleChange, formData, sendTransaction, transactions, isLoading, getAllTransactions }}>
       {children}
     </TransactionContext.Provider>
   )
