@@ -29,7 +29,7 @@ export const TransactionProvider = ({ children }) => {
   const { chainId, account } = useEthers();
 
   console.log("chain id context: ", chainId)
-  console.log("account context: ", account)
+  console.log("account context : ", account)
 
   const handleChange = (e, name) => {
     // setFormData passes previous State as the first parameter
@@ -163,7 +163,7 @@ export const TransactionProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    checkIfWalletIsConnected();
+    // checkIfWalletIsConnected();
     checkIfTransactionsExist();
   }, [])
 
