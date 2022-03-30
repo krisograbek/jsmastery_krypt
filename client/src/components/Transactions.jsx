@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import { useEthers } from '@usedapp/core';
+import React, { useContext, useEffect } from 'react';
 import { TransactionContext } from '../context/TransactionContext';
 import { shortenAddress } from '../utils/shortenAddress';
 
@@ -46,11 +47,24 @@ const TransactionCard = ({ id, url, message, timestamp, addressFrom, amount, add
 }
 
 const Transactions = () => {
-  const { currentAccount, transactions } = useContext(TransactionContext);
+  const { transactions, getAllTransactions } = useContext(TransactionContext);
+  const { account } = useEthers();
+
+  // update when account changes
+  useEffect(() => { }, [transactions])
+
   return (
     <div className='flex w-full justify-center items-center 2xl:px-20 gradient-bg-transactions'>
+      <button
+        className='flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd]'
+        onClick={getAllTransactions}
+      >
+        <p className='text-white text-base text-semibold'>
+          Get Transactions
+        </p>
+      </button>
       <div className='flex flex-col md:p-12 py-12 px-4'>
-        {currentAccount ? (
+        {account ? (
           <h3 className='text-white text-3xl text-center my-2'>Latest transactions</h3>
         ) : (
           <h3 className='text-white text-3xl text-center my-2'>Connect Your Account to see the latest transactions</h3>

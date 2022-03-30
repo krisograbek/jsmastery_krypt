@@ -21,12 +21,11 @@ const Input = ({ placeholder, name, type, value, handleChange }) => (
 )
 
 const Welcome = () => {
-  const { currentAccount, handleChange, formData, sendTransaction, isLoading } = useContext(TransactionContext);
-  const { chainId, account, activateBrowserWallet, deactivate } = useEthers();
+  const { handleChange, formData, sendTransaction, isLoading } = useContext(TransactionContext);
+  const { account, activateBrowserWallet, deactivate } = useEthers();
 
   const isConnected = account !== undefined;
 
-  console.log("chain id: ", chainId)
   console.log("account: ", account)
 
 
@@ -112,7 +111,7 @@ const Welcome = () => {
               </div>
               <div>
                 <p className='text-white font-light text-sm'>
-                  {shortenAddress(currentAccount)}
+                  {account && shortenAddress(account)}
                 </p>
                 <p className='text-white font-semibold text-lg mt-1'>
                   Ethereum

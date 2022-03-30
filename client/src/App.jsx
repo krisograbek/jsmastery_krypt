@@ -1,6 +1,5 @@
 import { Navbar, Footer, Services, Welcome, Transactions } from "./components"
 
-
 const App = () => {
   return (
     <div className="min-h-screen">
