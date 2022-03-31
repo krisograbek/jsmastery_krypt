@@ -1,4 +1,5 @@
 require('@nomiclabs/hardhat-waffle')
+require('@openzeppelin/hardhat-upgrades');
 require('dotenv').config();
 
 module.exports = {
@@ -14,5 +15,3 @@ module.exports = {
     }
   }
 }
-
-// https://eth-ropsten.alchemyapi.io/v2/f3JrW7xZbM0VHidKnwSvDv-EHoRbb1hI

@@ -2,7 +2,9 @@
 
 pragma solidity ^0.8.0;
 
-contract Transactions {
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract Transactions is ReentrancyGuard {
     uint256 transactionCount;
 
     event Transfer(
@@ -63,5 +65,24 @@ contract Transactions {
 
     function getTransactionCount() public view returns (uint256) {
         return transactionCount;
+    }
+
+    function transferEther(
+        address payable _receiver,
+        uint256 _amount,
+        string memory _message,
+        string memory _keyword
+    ) public nonReentrant {
+        require(msg.sender.balance >= _amount, "Ok, you've go enough money");
+        (bool success, ) = _receiver.call{value: _amount}("");
+        require(success, "Transaction failed!");
+        emit Transfer(
+            msg.sender,
+            _receiver,
+            _amount,
+            _message,
+            block.timestamp,
+            _keyword
+        );
     }
 }

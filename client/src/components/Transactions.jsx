@@ -47,7 +47,7 @@ const TransactionCard = ({ id, url, message, timestamp, addressFrom, amount, add
 }
 
 const Transactions = () => {
-  const { transactions, getAllTransactions } = useContext(TransactionContext);
+  const { transactions } = useContext(TransactionContext);
   const { account } = useEthers();
 
   // update when account changes
@@ -55,14 +55,14 @@ const Transactions = () => {
 
   return (
     <div className='flex w-full justify-center items-center 2xl:px-20 gradient-bg-transactions'>
-      <button
+      {/* <button
         className='flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd]'
         onClick={getAllTransactions}
       >
         <p className='text-white text-base text-semibold'>
           Get Transactions
         </p>
-      </button>
+      </button> */}
       <div className='flex flex-col md:p-12 py-12 px-4'>
         {account ? (
           <h3 className='text-white text-3xl text-center my-2'>Latest transactions</h3>
