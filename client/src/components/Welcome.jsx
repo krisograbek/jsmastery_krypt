@@ -21,7 +21,7 @@ const Input = ({ placeholder, name, type, value, handleChange }) => (
 )
 
 const Welcome = () => {
-  const { handleChange, formData, sendTransaction, isLoading } = useContext(TransactionContext);
+  const { handleChange, formData, sendTransaction2, isLoading } = useContext(TransactionContext);
   const { account, activateBrowserWallet, deactivate } = useEthers();
 
   const isConnected = account !== undefined;
@@ -43,7 +43,7 @@ const Welcome = () => {
     // None of them can be empty
     if (!addressTo || !amount || !keyword || !message) return;
 
-    sendTransaction();
+    sendTransaction2();
 
   }
 

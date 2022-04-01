@@ -163,6 +163,37 @@ export const TransactionProvider = ({ children }) => {
     }
   }
 
+  const sendTransaction2 = async () => {
+    try {
+      const { addressTo, amount, keyword, message } = formData;
+      // We need to parse the amount to hex
+      // Using parseEther We parse the amount of Ether in GWEI
+      const parsedAmount = ethers.utils.parseEther(amount);
+
+      const transactionContract = getEthereumContract(chainId);
+
+      const transactionHash = await transactionContract.transferEther(addressTo, message, keyword, { value: parsedAmount, "gasLimit": 0x4F400 });
+      // const transactionHash = await transactionContract.transferEther(addressTo, parsedAmount, message, keyword);
+
+      setIsLoading(true);
+      console.log(`Transaction ${transactionHash.hash} is running`);
+
+      await transactionHash.wait();
+
+      setIsLoading(false);
+      console.log(`Transaction ${transactionHash.hash} completed`);
+
+      const transactionCount = await transactionContract.getTransactionCount();
+      setTransactionCount(transactionCount.toNumber());
+
+
+    } catch (error) {
+      console.log(error)
+
+      throw new Error("No Ethereum Object")
+    }
+  }
+
   useEffect(() => {
     checkIfWalletIsConnected();
     checkIfTransactionsExist();
@@ -170,7 +201,7 @@ export const TransactionProvider = ({ children }) => {
 
 
   return (
-    <TransactionContext.Provider value={{ handleChange, formData, sendTransaction, transactions, isLoading, getAllTransactions }}>
+    <TransactionContext.Provider value={{ handleChange, formData, sendTransaction2, transactions, isLoading, getAllTransactions }}>
       {children}
     </TransactionContext.Provider>
   )
