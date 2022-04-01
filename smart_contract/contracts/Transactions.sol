@@ -75,6 +75,17 @@ contract Transactions is ReentrancyGuard {
         require(msg.sender.balance >= msg.value, "Ok, you've got enough money");
         (bool success, ) = _receiver.call{value: msg.value}("");
         require(success, "Transaction failed!");
+        transactionCount += 1;
+        transactions.push(
+            TransferStruct(
+                msg.sender,
+                _receiver,
+                msg.value,
+                _message,
+                block.timestamp,
+                _keyword
+            )
+        );
         emit Transfer(
             msg.sender,
             _receiver,
