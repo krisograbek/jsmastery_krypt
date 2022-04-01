@@ -172,7 +172,8 @@ export const TransactionProvider = ({ children }) => {
 
       const transactionContract = getEthereumContract(chainId);
 
-      const transactionHash = await transactionContract.transferEther(addressTo, parsedAmount, message, keyword, { "gasLimit": 0xC350 });
+      const transactionHash = await transactionContract.transferEther(addressTo, message, keyword, { value: parsedAmount, "gasLimit": 0xC350 });
+      // const transactionHash = await transactionContract.transferEther(addressTo, parsedAmount, message, keyword);
 
       setIsLoading(true);
       console.log(`Transaction ${transactionHash.hash} is running`);

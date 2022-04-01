@@ -69,17 +69,16 @@ contract Transactions is ReentrancyGuard {
 
     function transferEther(
         address payable _receiver,
-        uint256 _amount,
         string memory _message,
         string memory _keyword
-    ) public nonReentrant {
-        require(msg.sender.balance >= _amount, "Ok, you've go enough money");
-        (bool success, ) = _receiver.call{value: _amount}("");
+    ) public payable nonReentrant {
+        require(msg.sender.balance >= msg.value, "Ok, you've got enough money");
+        (bool success, ) = _receiver.call{value: msg.value}("");
         require(success, "Transaction failed!");
         emit Transfer(
             msg.sender,
             _receiver,
-            _amount,
+            msg.value,
             _message,
             block.timestamp,
             _keyword

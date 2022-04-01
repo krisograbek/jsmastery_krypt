@@ -37,8 +37,8 @@
       ]
     },
     "/home/kris/dev/jsmastery/krypt/smart_contract/contracts/Transactions.sol": {
-      "lastModificationDate": 1648720663163,
-      "contentHash": "5dbcbaaf176699f0e901e7d84839d58c",
+      "lastModificationDate": 1648803440757,
+      "contentHash": "557a109052a7aa5c7fcba52e727848ff",
       "sourceName": "contracts/Transactions.sol",
       "solcConfig": {
         "version": "0.8.0",
